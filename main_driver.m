@@ -1,21 +1,22 @@
 
 % driver is top-level script
 
-% load data
-% data is accoustic energy vs. time
-
-features = zeros(2,2); % r is letters, c is feature
-num_features = 2;
-
-j=1;
 letters = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N'};
-for i=letters
-    features(j,1) = mirgetdata(mirrms(strcat(i{1},'.wav')));
-    features(j,2) = mirgetdata(mirflatness(strcat(i{1},'.wav')));
-    j = j+1;
-end
-disp(features)
-scatter(features(:,1),features(:,2))
+
+% right now script just works with this folder
+% remember to be in main folder for cd command to work
+cd('Data_Set_Silence_Truncate_n35DB\5_key_Press_normal');
+miraudio = miraudio('folder');
+% audio is cells, each cell being audio data for a key
+% audio data is accoustic energy vs. time
+% order is A-Z
+audio = mirgetdata(miraudio); 
+
+
+mapped_audio = containers.Map(letters,audio);
+% this allows us to index audio by ex: mapped_audio('A')
+scatter(mapped_audio('A'),mapped_audio('B'))
+
 % get rid of silence
 
 % Optional:
@@ -42,3 +43,5 @@ scatter(features(:,1),features(:,2))
     
     
 % do machine learning
+
+cd('..'); cd('..');
