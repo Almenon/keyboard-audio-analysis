@@ -3,6 +3,7 @@ Created by me and RayStormX
 
 Summary:
 Extracts data from recordings of keystrokes.  Attempts to predict the key that was pressed based on that data.
+Requires [mirtoolbox](http://www.mathworks.com/matlabcentral/fileexchange/24583-mirtoolbox)
 
 Detailed Summary:
 
