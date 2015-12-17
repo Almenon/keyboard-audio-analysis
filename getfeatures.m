@@ -1,13 +1,25 @@
 function [features] = getfeatures(home,folder)
-% warning: takes somewhat long time (2 min)?
+    % returns matrix of features for given folder
+    % r is features, c is samples
+    % folder must be inside home directory
     cd(strcat(home,folder));
     
-    features = zeros(4,130); % letter is column, feature is row
+    % comment below line out if you already have a cell array 
+    % from Segment_all.m
+    audioCells = mirgetdata(miraudio('folder'));
+    number_samples = length(audioCells);
+    features = zeros(513,number_samples);
+    % 513 is number of elements in spectogram
     
-    features(1,:) = mirgetdata(mirrms('folder'));
-    features(2,:) = mirgetdata(mirflatness('folder'));
-    features(3,:) = mirgetdata(mirzerocross('folder'));
-    features(4,:) = mirgetdata(mirskewness('folder'));
+    for n=1:number_samples
+        % extract push peak
+        push_peak = extract_push_peak(audioCells{n});
+        % turn into mir object to pass into spectogram
+        mirObj = miraudio(push_peak(:,n));        
+        % get spectogram
+        mirObj = mirspectrum(mirObj);
+        features(:,n)=mirgetdata(mirObj);
+    end
     
     % return to home folder
     depth = length(strfind(folder,'\'));
