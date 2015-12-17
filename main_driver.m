@@ -1,8 +1,5 @@
 % Trains a SVM to be able to classify key-stroke sounds
 
-letters = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O',...
-    'P,','S','T','U','V','W','X','Y','Z'
-};
 home = 'c:\dev\Matlab\Audio Analysis\';
 
 
@@ -10,9 +7,10 @@ home = 'c:\dev\Matlab\Audio Analysis\';
 
 %features = getfeatures(home,['Keystrokes\Single_Key_Press_test']);
 load('training_features.mat');
+training_features = features; 
 load('testing_features.mat');
-mapped_features = containers.Map(letters,features); 
-%features by letter if desired
+testing_features = features;
+clear('features');
 
 % visualize if desired
 % if using more than 3 features use PCA to compress
@@ -25,15 +23,16 @@ mapped_features = containers.Map(letters,features);
 
 j = 1;
 results = [];
-num_samples = length(training_features);
+num_samples = size(training_features,2);
+% invert features to be correct format for svm
+training_features = training_features';
+testing_features = testing_features';
 
 for i = 1:12:num_samples % 12 samples each letter
     labels = zeros(1,num_samples);
     labels(i:i+11) = 1; % categorize letter
-    SVMStruct = svmtrain(training_features',labels,...
-        'method','LS'); %#ok<SVMTRAIN>
-    % For now just test on same data
-    results = [results svmclassify(SVMStruct,testing_features')]; %#ok<SVMCLASSIFY>
+    SVMStruct = svmtrain(training_features,labels); %#ok<SVMTRAIN>
+    results = [results svmclassify(SVMStruct,testing_features)]; %#ok<SVMCLASSIFY>
     correct_classifications = length(find(results(i:i+11,j)==1));
     false_positive_rate(j) = length(find(results(:,j)==1)-correct_classifications)/118;
     false_negative_rate(j) = (12-correct_classifications)/12;
